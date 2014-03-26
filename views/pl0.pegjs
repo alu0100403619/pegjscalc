@@ -22,11 +22,13 @@
 
 program = bl:block PUNTO { return bl; }
 
-block = (declaracion_constante)? (declaracion_variable)? st
+block = (declaracion_constante)? (declaracion_variable)? proc* st
 
 declaracion_constante = CONST ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTO_COMA
 
 declaracion_variable = VAR ID (COMA ID)* PTO_COMA
+
+proc = PROC ID PTO_COMA block PTO_COMA
 
 st     = i:ID ASSIGN e:exp            
             { return {type: '=', left: i, right: e}; }
@@ -66,6 +68,7 @@ COMA     = _ ',' _
 PTO_COMA = _ ';' _
 CONST    = _ "const" _
 VAR      = _ "var" _
+PROC     = _ "procedure" _
 IF       = _ "if" _
 THEN     = _ "then" _
 ELSE     = _ "else" _
