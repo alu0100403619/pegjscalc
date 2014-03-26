@@ -20,6 +20,14 @@
   }
 }
 
+program = bl:block PUNTO { return bl; }
+
+block = (declaracion_constante)? (declaracion_variable)? st
+
+declaracion_constante = CONST ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTO_COMA
+
+declaracion_variable = VAR ID (COMA ID)* PTO_COMA
+
 st     = i:ID ASSIGN e:exp            
             { return {type: '=', left: i, right: e}; }
        / IF e:exp THEN st:st ELSE sf:st
@@ -53,6 +61,11 @@ ADD      = _ op:[+-] _ { return op; }
 MUL      = _ op:[*/] _ { return op; }
 LEFTPAR  = _"("_
 RIGHTPAR = _")"_
+PUNTO    = _ '.' _
+COMA     = _ ',' _
+PTO_COMA = _ ';' _
+CONST    = _ "const" _
+VAR      = _ "var" _
 IF       = _ "if" _
 THEN     = _ "then" _
 ELSE     = _ "else" _
