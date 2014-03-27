@@ -2,7 +2,7 @@ body {
   font-family: Helvetica, Arial, sans-serif; }
 
 h1 {
-  color: #990033;
+  color: #64b018;
   font: 32px/1 Helvetica, Arial, sans-serif; }
 
 header h1 {
@@ -18,7 +18,7 @@ nav {
     list-style: none;
     margin: 0;
     padding: 0;
-    background: #444444;
+    background: #70a33e;
     overflow: hidden; }
   nav li {
     float: left; }
@@ -26,10 +26,10 @@ nav {
     text-decoration: none;
     display: block;
     padding: 8px;
-    background: #444444;
+    background: #70a33e;
     color: white; }
     nav a:hover {
-      background: #111111; }
+      background: #b3d641; }
 
 p {
   font: 13px/1.4 Helvetica, Arial, sans-serif; }
@@ -38,7 +38,7 @@ label {
   display: block; }
 
 nav a.current {
-  background: #c4c4c4; }
+  background: #354011; }
 
 .flash {
   width: 600px;
@@ -59,7 +59,7 @@ nav a.current {
   padding-left: 24px; }
 
 .loadfile {
-  background-color: #444444;
+  background-color: white;
   border-radius: 5px;
   border: 2px solid #DDD;
   line-height: 80px;
