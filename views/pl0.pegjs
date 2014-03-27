@@ -20,13 +20,25 @@
   }
 }
 
-program = bl:block PUNTO { return {type: 'program', block: b}; }
+program = bl:block PUNTO
+          { return {type: 'program', block: b}; }
 
-block = (declaracion_constante)? (declaracion_variable)? ((proc)*)? st
+block = (c:declaracion_constante)? (v:declaracion_variable)? (pr:(proc)*)? st
+        {
+           return {
+              type: 'BLOCK',
+              consts: c,
+              vars: v,
+              procs: pr,
+              sts: st
+           };
+        }
 
-declaracion_constante = CONST ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTO_COMA
+declaracion_constante = CONST i:ID ASSIGN n:NUMBER (COMA i:ID ASSIGN n:NUMBER)* PTO_COMA
+                        { return {type: 'CONST', ids: i, values: n};}
 
-declaracion_variable = VAR ID (COMA ID)* PTO_COMA
+declaracion_variable = VAR i:ID (COMA i:ID)* PTO_COMA
+                       {return {type: 'VAR', vars: i};}
 
 proc = PROC ID PTO_COMA block PTO_COMA
 
@@ -38,7 +50,7 @@ st     = i:ID ASSIGN e:exp
                type: 'IFELSE',
                c:  e,
                st: st,
-               sf: sf,
+               sf: sf
              };
            }
        / IF e:exp THEN st:st    
