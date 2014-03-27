@@ -4,8 +4,7 @@ require 'data_mapper'
 require 'pp'
 
 # full path!
-DataMapper.setup(:default,
-                 ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )
+DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )
 
 class PL0Program
   include DataMapper::Resource
@@ -37,12 +36,11 @@ get '/:selected?' do |selected|
   puts "selected = #{selected}"
   c  = PL0Program.first(:name => selected)
 
-  source = if c then c.source else "a = 3-2-1" end
+  source = if c then c.source else "a = 3-2-1." end
 
- # if c
-  # c.uses = c.uses + 1
- #  c.update(:name => c.name)
-  #end
+  if c
+    c.update(:nuses => c.nuses + 1)
+  end
 
   erb :index, 
       :locals => { :programs => programs, :source => source }
@@ -59,9 +57,12 @@ post '/save' do
     c.source = params["input"]
     c.save
   else
-    if PL0Program.all.size > 1
-      del = PL0Program.min(:nuses)
-      del.destroy
+    if PL0Program.all.size > 9
+      #del = PL0Program.min(:nuses)
+      #del.destroy
+
+      adapter = DataMapper.repository(:default).adapter
+      adapter.execute("DELETE FROM pl0_programs WHERE nuses = (SELECT MIN(nuses) FROM pl0_programs) AND name = (SELECT name FROM pl0_programs WHERE nuses = (SELECT MIN(nuses) FROM pl0_programs)  ORDER BY name limit 1);")   
     end
 
     c = PL0Program.new
