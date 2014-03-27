@@ -74,11 +74,12 @@ cond = ODD e:exp
         
 st     = i:ID ASSIGN e:exp            
            { return {type: '=', left: i, right: e}; }
-       / CALL i:ID
+       / CALL i:ID a:args
            {
               return {
                  type: 'CALL',
-                 id: i
+                 id: i,
+                 arguments: a
               };
            }
        / BEGIN l:st r:(PTO_COMA st)* END
@@ -87,28 +88,28 @@ st     = i:ID ASSIGN e:exp
               for (var i = 0; i < r.length; i++)
                  result.push(r[i][1]);
          }
-       / IF e:cond THEN st:st ELSE sf:st
+       / IF c:cond THEN st:st ELSE sf:st
            {
              return {
                type: 'IFELSE',
-               c:  e,
+               condition:  c,
                st: st,
                sf: sf
              };
            }
-       / IF e:cond THEN st:st    
+       / IF c:cond THEN st:st    
            {
              return {
                type: 'IF',
-               c:  e,
+               condition:  c,
                st: st
              };
            }
-       / WHILE e:cond DO st:st
+       / WHILE c:cond DO st:st
            {
               return {
                  type: 'WHILE',
-                 c: e,
+                 condition: c,
                  st: st
               };
            }
@@ -125,7 +126,6 @@ _ = $[ \t\n\r]*
 ASSIGN   = _ op:'=' _  { return op; }
 ADD      = _ op:[+-] _ { return op; }
 MUL      = _ op:[*/] _ { return op; }
-COMP     = _ op:$([<>=!][=]/[<>]) _ {return op;}
 LEFTPAR  = _"("_
 RIGHTPAR = _")"_
 PUNTO    = _ '.' _
@@ -143,6 +143,7 @@ END      = _ "end" _
 ODD      = _ "odd" _
 WHILE    = _ "while" _
 DO       = _ "do" _
+COMP     = _ op:$([<>=!][=]/[<>]) _ {return op;}
 ID       = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _ 
             { 
               return { type: 'ID', value: id }; 
