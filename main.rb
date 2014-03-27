@@ -4,14 +4,17 @@ require 'data_mapper'
 require 'pp'
 
 # full path!
-DataMapper.setup(:default, 
+DataMapper.setup(:default,
                  ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )
 
 class PL0Program
   include DataMapper::Resource
   
-  property :name, String, :key => true
-  property :source, String, :length => 1..1024
+  property :name,      String,   :key => true
+  property :source,    String,   :length => 1..1024
+  property :create_at, DateTime, :default => Time.now
+  property :nuses,     Integer,  :default => 1
+
 end
 
   DataMapper.finalize
@@ -33,7 +36,14 @@ get '/:selected?' do |selected|
   pp programs
   puts "selected = #{selected}"
   c  = PL0Program.first(:name => selected)
+
   source = if c then c.source else "a = 3-2-1" end
+
+ # if c
+  # c.uses = c.uses + 1
+ #  c.update(:name => c.name)
+  #end
+
   erb :index, 
       :locals => { :programs => programs, :source => source }
 end
@@ -41,17 +51,25 @@ end
 post '/save' do
   pp params
   name = params[:fname]
+
   c  = PL0Program.first(:name => name)
   puts "prog <#{c.inspect}>"
+
   if c
     c.source = params["input"]
     c.save
   else
+    if PL0Program.all.size > 1
+      del = PL0Program.min(:nuses)
+      del.destroy
+    end
+
     c = PL0Program.new
     c.name = params["fname"]
     c.source = params["input"]
     c.save
   end
+
   pp c
   redirect '/'
 end
