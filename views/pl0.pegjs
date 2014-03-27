@@ -20,9 +20,9 @@
   }
 }
 
-program = bl:block PUNTO { return bl; }
+program = bl:block PUNTO { return {type: 'program', block: b}; }
 
-block = (declaracion_constante)? (declaracion_variable)? proc* st
+block = (declaracion_constante)? (declaracion_variable)? ((proc)*)? st
 
 declaracion_constante = CONST ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTO_COMA
 
