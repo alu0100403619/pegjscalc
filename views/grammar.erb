@@ -22,36 +22,72 @@ Recuerde que un PEG $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
 <ol>
   <li> $\Sigma = \{ if, then, else, =, +, -, *, /, (, ), 0 \ldots 9 \}$, 
   <li> $V = \{ st, exp, term, factor \} \cup$ <br />
-  $\{ASSIGN, ADD, MUL, LEFTPAR, RIGHTPAR \} \cup$ <br />
-  $\{IF, THEN, ELSE, ID, NUMBER, \_ \}$
+  $\{ADD, MUL, COND, LEFTPAR, RIGHTPAR, PTOCOMA, COMA, PTO, CALL, BEGIN\} \cup$ <br />
+  $\{END, PROCEDURE, CONST, VAR, IF, THEN, ELSE, WHILE, DO, ODD, ID\}$
   <li> Reglas de Análisis:
   <ol>
 <pre>
-st     = ID ASSIGN exp
-       / IF exp THEN st ELSE st
-       / IF exp THEN st
-exp    = term   (ADD term)*
-term   = factor (MUL factor)*
+prog = (block) + PTO 
+
+block = CONST (cons) + PTOCOMA
+        / VAR (var) + PTOCOMA
+        / (proc)* st 
+
+cons = ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTOCOMA
+
+
+var = ID (COMA ID)* PTOCOMA
+           
+proc = p:(PROCEDURE ID args? PTOCOMA block PTOCOMA)*
+           
+args = LEFTPAR ID (COMA ID)* RIGHTPAR
+       
+st = ID ASSIGN (exp)
+     / CALL ID (args)?
+     / BEGIN (st) (PTOCOMA st)* END
+     / IF (cond) THEN (st) ELSE (st)
+     / IF (cond) THEN (st)
+     / WHILE (cond) DO (st)
+
+cond = ODD (exp)
+       / (exp) COND (exp)
+       
+exp = (term) (ADD term)*
+term = (factor) (MUL factor)* 
 
 factor = NUMBER
        / ID
-       / LEFTPAR exp RIGHTPAR
+       / LEFTPAR (exp) RIGHTPAR
 
 _ = $[ \t\n\r]*
 
-ASSIGN   = _ '=' _
-ADD      = _ [+-] _
-MUL      = _ [*/] _
-LEFTPAR  = _"("_
+ASSIGN = _ op:'=' _ 
+ADD = _ op:[+-] _ 
+MUL = _ op:[*/] _ 
+COND = _ op:$([<>=!][=]/[<>]) _ 
+LEFTPAR = _"("_
 RIGHTPAR = _")"_
-IF       = _ "if" _
-THEN     = _ "then" _
-ELSE     = _ "else" _
-ID       = _ [a-zA-Z_][a-zA-Z_0-9]* _
-NUMBER   = _ [0-9]+ _
+PTOCOMA = _";"_
+COMA = _","_
+PTO = _"."_
+CALL = _ "call" _
+BEGIN = _ "begin" _
+END = _ "end" _
+PROCEDURE = _ "procedure" _
+CONST = _ "const" _
+VAR = _ "var" _
+IF = _ "if" _
+THEN = _ "then" _
+ELSE = _ "else" _
+WHILE = _ "while" _
+DO = _ "do" _
+ODD = _ "odd" _
+ID = _ id:$([a-zA-Z_][a-zA-Z_0-9]*) _
+NUMBER = _ digits:$[0-9]+ _
+
 </pre>
   </ol>
-  <li> Expresión de arranque: $st$
+  <li> Expresión de arranque: $prog$
 </ol>
 <BR>
 <BR>

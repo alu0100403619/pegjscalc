@@ -85,7 +85,7 @@ pl0 = (function() {
                      for (var x = 0; x < v.length; x++)
                        result.push(v[x][1]);
                      
-                     return ids;
+                     return result;
                    },
         peg$c9 = null,
         peg$c10 = function(p) {
@@ -100,7 +100,7 @@ pl0 = (function() {
              
                      var result = [i];
                      for (var x = 0; x < ids.length; x++)
-                       result.push(is[x][1]);
+                       result.push(ids[x][1]);
                      
                      return result;
                    },
