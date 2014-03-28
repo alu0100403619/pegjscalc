@@ -79,7 +79,7 @@ var = i:ID v:(COMA ID)* PTOCOMA
              for (var x = 0; x < v.length; x++)
                result.push(v[x][1]);
              
-             return result;
+             return ids;
            }
            
 proc = p:(PROCEDURE ID args? PTOCOMA block PTOCOMA)*
