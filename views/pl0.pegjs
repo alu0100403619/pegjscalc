@@ -97,7 +97,7 @@ args = LEFTPAR i:ID ids:(COMA ID)* RIGHTPAR
      
              var result = [i];
              for (var x = 0; x < ids.length; x++)
-               result.push(is[x][1]);
+               result.push(ids[x][1]);
              
              return result;
            }
