@@ -1,41 +1,39 @@
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="tests/mocha.css" />
-<link href="styles.css" rel="stylesheet" type="text/css">
-
-<div id="mocha"></div>
-  <p class="hidden">
+<div id="content">
+  <p class="loadfile">
     <input type="file" id="examples" />
   </p>
   <p>
-  <table class="hidden">
+  <nav>
+  <ul>
+    <% programs.each do |p| %>
+      <li><a href="<%= p.name %>" <%=current?('/'+p.name)%>><%= p.name %></a></li>
+    <% end %>
+  </ul>
+  </nav>
+  <table>
     <tr>
       <td>
         <form action="/save" method="post">
-          <textarea id="input" name="input"
+          <textarea id="input" name="input" 
                     autofocus cols = "40" rows = "4">
+<%= source %>
           </textarea>
           <br/>
-          <label for="saveas">Save as</label>
-          <input id="saveas" type="text" name="fname"
+          <label for="saveas">guardar como</label>
+          <input id="saveas" type="text" name="fname" 
                  title="name" pattern="\w+" />
         </form>
       </td>
-      <td><button id="parse" type="button">parse</button></td>
+      <td><button id="parse" type="button"> parsear </button></td>
     </tr>
   </table>
   </p>
-  <div class="hidden">
+  <div class="output">
     <pre>
-<span id="output"></span> <!-- Output goes here! -->
+<span id="output"></span> <!-- Output goes here! --> 
     </pre>
   </div>
+</div>
 
-<div id="mocha"></div>
 <script src="pl0.js"></script>
 <script src="main.js"></script>
-<script src="tests/chai.js"></script>
-<script src="tests/mocha.js"></script>
-<script>mocha.setup('tdd')</script>
-<script src="tests/tests.js"></script>
-<script>mocha.run();</script>

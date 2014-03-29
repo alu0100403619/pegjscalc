@@ -1,17 +1,14 @@
-<h1>Analizador de PL0</h1>
-
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="test/mocha.css" />
+<link rel="stylesheet" href="tests/mocha.css" />
 <link href="styles.css" rel="stylesheet" type="text/css">
 
 <div id="mocha"></div>
-  <p class="loadfile">
+  <p class="hidden">
     <input type="file" id="examples" />
   </p>
-
   <p>
-  <table>
+  <table class="hidden">
     <tr>
       <td>
         <form action="/save" method="post">
@@ -19,7 +16,7 @@
                     autofocus cols = "40" rows = "4">
           </textarea>
           <br/>
-          <label for="saveas">Guardar como:</label>
+          <label for="saveas">Save as</label>
           <input id="saveas" type="text" name="fname"
                  title="name" pattern="\w+" />
         </form>
@@ -28,18 +25,17 @@
     </tr>
   </table>
   </p>
-
-  <div class="output">
+  <div class="hidden">
     <pre>
-      <span id="output"></span> <!-- Output goes here! -->
+<span id="output"></span> <!-- Output goes here! -->
     </pre>
   </div>
 
 <div id="mocha"></div>
 <script src="pl0.js"></script>
 <script src="main.js"></script>
-<script src="test/chai.js"></script>
-<script src="test/mocha.js"></script>
+<script src="tests/chai.js"></script>
+<script src="tests/mocha.js"></script>
 <script>mocha.setup('tdd')</script>
-<script src="test/tests.js"></script>
+<script src="tests/tests.js"></script>
 <script>mocha.run();</script>
