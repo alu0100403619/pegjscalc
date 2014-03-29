@@ -1,61 +1,89 @@
 var assert = chai.assert;
 
-suite('Operaciones Aritmeticas', function(){
-  test('Asignacion', function(){
-    valor = pl0.parse("ocho = 8 .")
-    assert.equal(valor[0].type, "=")
-    assert.equal(valor[0].left.type, "ID")
-    assert.equal(valor[0].left.value, "ocho")
-    assert.equal(valor[0].right.value.type, "NUMBER")
-    assert.equal(valor[0].right.value.value, "8")
+suite('Detección correcta de códigos simples', function(){
+  test('Comprobación de asignación', function(){
+    var aux = pl0.parse("variable = 150 .");
+    assert.equal(aux.program[0].sentence.type, "ASSIGN")
   });
 
-  test('Suma', function(){
-    valor = pl0.parse("Suma = 8+ 9 .")
-    assert.equal(valor[0].right.type, "+")
+  test('Comprobación de suma', function(){
+    var aux = pl0.parse("variable = 100 + 50 .")
+    assert.equal(aux.program[0].sentence.right.type, "+")
   });
 
-  test('Resta', function(){
-    valor = pl0.parse("Resta = 5 -19 .")
-    assert.equal(valor[0].right.type, "-")
+  test('Comprobación de multiplicación', function(){
+    var aux = pl0.parse("variable = 5 * 10 .")
+    assert.equal(aux.program[0].sentence.right.type, "*")
   });
 
-  test('Multiplicacion', function(){
-    valor = pl0.parse("Multiplicacion = 4 *3 .")
-    assert.equal(valor[0].right.value.type, "*")
+  test('Comprobación de división', function(){
+    var aux = pl0.parse("variable = 100 / 2 .")
+    assert.equal(aux.program[0].sentence.right.type, "/")
   });
 
-  test('División', function(){
-    valor = pl0.parse("Division = 4/4 .")
-    assert.equal(valor[0].right.value.type, "/")
+  test('Comprobación de precedencia de operadores', function(){
+    var aux = pl0.parse("variable = 10 + 20 * 2 .")
+    assert.equal(aux.program[0].sentence.right.type, "+")
+    assert.equal(aux.program[0].sentence.right.right.type, "*")
   });
+
+  test('Comprobación de comparación', function(){
+    var aux = pl0.parse("if variable1 == 100 then variable2 = 200.")
+    assert.equal(aux.program[0].sentence.condition.type, "==")
+  });
+
+  test('Comprobación de recursividad a izquierdas', function(){
+    var aux = pl0.parse("variable = 10 - 5 - 1 .");
+    assert.equal(aux.program[0].sentence.type, "ASSIGN")
+    assert.equal(aux.program[0].sentence.right.type, "-")
+    assert.equal(aux.program[0].sentence.right.left.type, "-")
+  });
+
+  test('Comprobación de detección de errores', function(){
+    assert.throws(function() { pl0.parse("var1 = 500"); }, /Expected "."/);
+  });
+
 });
 
-
-suite('Funciones', function(){
-  test('Call', function(){
-    valor = pl0.parse("call funcion(parametros) .")
-    assert.equal(valor[0].type, "CALL")
+suite('Detección correcta de códigos complejos', function(){
+  test('Comprobación de IF', function(){
+    var aux = pl0.parse("if variable1 == 100 then variable2 = 200.")
+    assert.equal(aux.program[0].sentence.type, "IF")
+  });
+  
+   test('Comprobación de IF-ELSE', function(){
+    var aux = pl0.parse("if variable1 == 100 then variable2 = 200 else variable3 = 300.")
+    assert.equal(aux.program[0].sentence.type, "IFELSE")
   });
 
-  test('If', function(){
-    valor = pl0.parse("if a == 4 then variable = 5 .")
-    assert.equal(valor[0].type, "IF")
+  test('Comprobación de BEGIN-END', function(){
+    var aux = pl0.parse("begin variable1 = 150; variable2 = 200; end; .")
+    assert.equal(aux.program[0].sentence.type, "BEGIN")
   });
 
-  test('If Else', function(){
-    valor = pl0.parse("if a == 7 then variable = a else variable = b .")
-    assert.equal(valor[0].type, "IFELSE")
+  test('Comprobación de WHILE-DO', function(){
+    var aux = pl0.parse("while variable == 250 do variable2 = variable3 - 1.")
+    assert.equal(aux.program[0].sentence.type, "WHILE")
   });
 
-  test('While', function(){
-    valor = pl0.parse("while a == 1 do i = i+1 .")
-    assert.equal(valor[0].type, "WHILE")
+  test('Comprobación de CALL', function(){
+    var aux = pl0.parse("call miFuncion; .")
+    assert.equal(aux.program[0].sentence.type, "CALL")
   });
 
-  test('Begin', function(){
-    valor = pl0.parse("begin variable = a; variable = b end.")
-    assert.equal(valor[0].type, "BEGIN")
+  test('Comprobación de paso de argumentos en CALL', function(){
+    var aux = pl0.parse("call miFuncion(a, b, c); .")
+    assert.equal(aux.program[0].sentence.type, "CALL")
+    assert.equal(aux.program[0].sentence.arguments[0].ident.value, "a")
+    assert.equal(aux.program[0].sentence.arguments[1].ident.value, "b")
+    assert.equal(aux.program[0].sentence.arguments[2].ident.value, "c")
+  });
+  
+  test('Comprobación de paso de argumentos en PROCEDURE', function(){
+    var aux = pl0.parse("procedure miFuncion(var a, var b): begin a = 1; b = 2; end;end; x = 7 - 1; .")
+    $('#output').html(JSON.stringify(aux,undefined,2));
+    assert.match(output.innerHTML, /PROCEDURE/)
+    assert.equal(aux.program[0].procedure[0].arguments[0].ident.value, "a")
+    assert.equal(aux.program[0].procedure[0].arguments[1].ident.value, "b")
   });
 });
-
