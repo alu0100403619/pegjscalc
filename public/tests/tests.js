@@ -16,7 +16,7 @@ suite( 'Analizador sintáctico con PEGJS', function(){ //Suite equivale al descr
   
   test('Constructor program', function(){
     var result = pl0.parse("const A = 5; var A, b; t = 3.");
-    var esperado = '{\n  "type": "PROGRAM",\n  "bloque": [\n    {\n      "type": "CONST",\n      "lista": [\n        {\n          "type": "=",\n          "left": {\n            "type": "ID",\n            "value": "A"\n          },\n          "right": {\n            "type": "NUM",\n            "value": 5\n          }\n        }\n      ]\n    },\n    {\n      "type": "VAR",\n      "lista": [\n        {\n          "type": "ID",\n          "value": "A"\n        },\n        {\n          "type": "ID",\n          "value": "b"\n        }\n      ]\n    },\n    [],\n    {\n      "type": "=",\n      "left": {\n        "type": "ID",\n        "value": "t"\n      },\n      "right": {\n        "type": "NUM",\n        "value": 3\n      }\n    }\n  ]\n}';
+    var esperado = '{\n  "type": "PROGRAM",\n  "bloque": [\n    {\n      "type": "CONST",\n      "consts": [\n        {\n          "type": "=",\n          "left": {\n            "type": "ID",\n            "value": "A"\n          },\n          "right": {\n            "type": "NUM",\n            "value": 5\n          }\n        }\n      ]\n    },\n    {\n      "type": "VAR",\n      "vars": [\n        {\n          "type": "ID",\n          "value": "A"\n        },\n        {\n          "type": "ID",\n          "value": "b"\n        }\n      ]\n    },\n    [],\n    {\n      "type": "=",\n      "left": {\n        "type": "ID",\n        "value": "t"\n      },\n      "right": {\n        "type": "NUM",\n        "value": 3\n      }\n    }\n  ]\n}';
     assert.deepEqual(JSON.stringify(result,undefined,2), esperado);
   });
   
