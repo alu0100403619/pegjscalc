@@ -22,38 +22,40 @@ Recuerde que un PEG $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
 <ol>
   <li> $\Sigma = \{ if, then, else, =, +, -, *, /, (, ), 0 \ldots 9 \}$, 
   <li> $V = \{ st, exp, term, factor \} \cup$ <br />
-  $\{ADD, MUL, COND, LEFTPAR, RIGHTPAR, PTOCOMA, COMA, PTO, CALL, BEGIN\} \cup$ <br />
+  $\{ADD, MUL, COND, LEFTPAR, RIGHTPAR, PTO_COMA, COMA, PTO, CALL, BEGIN\} \cup$ <br />
   $\{END, PROCEDURE, CONST, VAR, IF, THEN, ELSE, WHILE, DO, ODD, ID\}$
   <li> Reglas de Análisis:
   <ol>
 <pre>
-prog = (block) + PTO 
+program = (block) + PTO 
 
-block = CONST (cons) + PTOCOMA
-        / VAR (var) + PTOCOMA
+block = CONST (cons) + PTO_COMA
+        / VAR (var) + PTO_COMA
         / (proc)* st 
 
-cons = ID ASSIGN NUMBER (COMA ID ASSIGN NUMBER)* PTOCOMA
+cons = CONST (assin) (COMA (assin))* PTO_COMA
 
+var = VAR ID (COMA ID)* PTO_COMA
+           
+proc = PROCEDURE ID (arg)? PTO_COMA block PTO_COMA
 
-var = ID (COMA ID)* PTOCOMA
+assin = ID ASSIGN exp
            
-proc = p:(PROCEDURE ID args? PTOCOMA block PTOCOMA)*
-           
-args = LEFTPAR ID (COMA ID)* RIGHTPAR
+arg = LEFTPAR (exp) (COMA exp)* RIGHTPAR
        
-st = ID ASSIGN (exp)
-     / CALL ID (args)?
-     / BEGIN (st) (PTOCOMA st)* END
-     / IF (cond) THEN (st) ELSE (st)
-     / IF (cond) THEN (st)
-     / WHILE (cond) DO (st)
+st = CALL ID (arg)?
+    / ID ASSIGN 
+    / IF (cond) THEN (st) ELSE s(st)
+    / IF (cond) THEN (st)
+    / BEGIN (st) (PTO_COMA st)* END
+    / WHILE (cond) DO (st)
 
 cond = ODD (exp)
-       / (exp) COND (exp)
+      / (exp) COMPARISON (exp)
        
-exp = (term) (ADD term)*
-term = (factor) (MUL factor)* 
+exp = (term) (ADD (term)*
+
+term = (factor) (MUL (factor)*
 
 factor = NUMBER
        / ID
@@ -61,24 +63,24 @@ factor = NUMBER
 
 _ = $[ \t\n\r]*
 
-ASSIGN = _ op:'=' _ 
-ADD = _ op:[+-] _ 
-MUL = _ op:[*/] _ 
-COND = _ op:$([<>=!][=]/[<>]) _ 
+COMPARISON = _ ('==' / [#|<|<=|>|>=]) _ 
+ASSIGN = _ '=' _ 
+ADD = _ [+-] _ 
+MUL = _ [*/] _
+PTO = _"."_
+PTO_COMA = _";"_
+COMA = _","_
 LEFTPAR = _"("_
 RIGHTPAR = _")"_
-PTOCOMA = _";"_
-COMA = _","_
-PTO = _"."_
-CALL = _ "call" _
-BEGIN = _ "begin" _
-END = _ "end" _
-PROCEDURE = _ "procedure" _
-CONST = _ "const" _
-VAR = _ "var" _
+VAR = _"var"_
+CONST = _"const"_
+PROCEDURE= _"procedure"_
 IF = _ "if" _
 THEN = _ "then" _
 ELSE = _ "else" _
+CALL = _ "call" _
+BEGIN = _ "begin" _
+END = _ "end" _
 WHILE = _ "while" _
 DO = _ "do" _
 ODD = _ "odd" _
@@ -87,7 +89,7 @@ NUMBER = _ digits:$[0-9]+ _
 
 </pre>
   </ol>
-  <li> Expresión de arranque: $prog$
+  <li> Expresión de arranque: $program$
 </ol>
 <BR>
 <BR>
