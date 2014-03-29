@@ -1,7 +1,3 @@
-/*
- * PL0 Grammar
- */
-
 {
   var tree = function(f, r) {
     if (r.length > 0) {
@@ -19,133 +15,122 @@
   }
 }
 
-prog = bl:block PTO { return { type: 'program', block: bl } }
-
-block = VAR v:var p:proc s:st
-           {
-             
-             return {
-               type: 'block',
-               vars: v,
-               procs: p,
-               st: s
+program = b:block PTO
+             { return {
+                type: "PROGRAM",
+                bloque: b };
              }
-           }
-       / CONST c:cons VAR v:var p:proc s:st
-           {
-             
-             return {
-               type: 'block',
-               consts: c,
-               vars: v,
-               procs: p,
-               st: s
-             }
-           }
-       / CONST c:cons p:proc s:st
-           {
-             
-             return {
-               type: 'block',
-               consts: c,
-               procs: p,
-               st: s
-             }
-           }
-       / p:proc s:st
-           {
-             
-             return {
-               type: 'block',
-               procs: p,
-               st: s
-             }
-           }
 
-cons = i:ID ASSIGN n:NUMBER c:(COMA ID ASSIGN NUMBER)* PTOCOMA
-           {
-             
-             var result = [{type: '=', left: i, right: n}];
-             for (var x = 0; x < c.length; x++)
-               result.push({type: '=', left: c[x][1], right: c[x][3]});
-             
-             return result;
-           }
+block = c:(cons)? v:(var)? p:(proc)* s:st
+             {
+                var result = new Array()
+                if (c){
+                   result.push({type: "CONST", consts: c})
+                }
+                if (v){
+                   result.push({type: "VAR", vars: v})
+                }
+                if (p) {
+                   result.push(p)
+                }
+                if (s){
+                   result.push(s)
+                }
+                return result
+             }
 
-var = i:ID v:(COMA ID)* PTOCOMA
-           {
-             
-             var result = [i];
-             for (var x = 0; x < v.length; x++)
-               result.push(v[x][1]);
-             
-             return result;
-           }
-           
-proc = p:(PROCEDURE ID args? PTOCOMA block PTOCOMA)*
-           {
-                  
-             var result = [];
-             for (var x = 0; x < p.length; x++)
-               result.push({type: 'procedure', id: p[x][1], arguments: p[x][2], block: p[x][4]});
-             
-             return result;
-           }
-           
-args = LEFTPAR i:ID ids:(COMA ID)* RIGHTPAR
-           {
-     
-             var result = [i];
-             for (var x = 0; x < ids.length; x++)
-               result.push(ids[x][1]);
-             
-             return result;
-           }
-           
-st = i:ID ASSIGN e:exp
-            { return { type: '=', left: i, right: e }; }
-       / CALL i:ID a:args?
-           {
-             return { type: 'call', id: i, arguments: a };
-           }
-       / BEGIN l:st r:(PTOCOMA st)* END
-           {
-             var result = [l];
-               for (var i = 0; i < r.length; i++)
-                 result.push(r[i][1]);
-         
-               return result;
-           }
-       / IF c:cond THEN st:st ELSE sf:st
-           {
-             return {
-               type: 'IFELSE',
-               condition: e,
-               true_st: st,
-               false_st: sf,
-             };
-           }
-       / IF c:cond THEN st:st
-           {
-             return {
-               type: 'IF',
-               condition: c,
-               st: st
-             };
-           }
-       / WHILE c:cond DO st:st
-           {
-             return {
-               type: 'IF',
-               condition: c,
-               st: st
-             };
-           }
+cons = CONST u:assin c:(COMA (assin))* PTO_COMA
+             {
+                var result = new Array();
+                result.push(u)
+                for ( var i = 0; i < c.length; i++)
+                   result.push(c[i][1]);
+                return result;
+             }
 
-cond = ODD e:exp { return { type: 'ODD', expression: e }; }
-       / e1:exp c:COND e2:exp { return { type: c, left: e1, right: e2 }; }
-       
+var = VAR id:ID i:(COMA ID)* PTO_COMA
+             {
+                var result = new Array();
+                r.push(id);
+                for ( var k = 0; k < i.length; k++)
+                   result.push(i[k][1]);
+                return result;
+             }
+
+proc = PROCEDURE id:ID a:(arg)? PTO_COMA b:block PTO_COMA
+             {
+                if (a)
+                   return { type: "PROCEDURE", name: id, argumentos: a, subrutina: b[1]}
+                else
+                   return { type: "PROCEDURE", name: id, subrutina: b[1]}
+             }
+
+assin = i:ID ASSIGN e:exp {return {type: '=', left: i, right: e}; }
+
+arg = LEFTPAR e:exp a:(COMA exp)* RIGHTPAR
+             {
+                var result = new Array();
+                result.push(e);
+                for (var i = 0; i < a.length; i++)
+                   result.push(a[i][1]);
+                return {lista: result}
+             }
+
+st = CALL r:ID a:(arg)?
+             { return {type:'CALL', argumentos: a, right: r }; }
+   / i:ID ASSIGN e:exp
+             { return {type: '=', left: i, right: e}; }
+   / IF e:cond THEN st:st ELSE sf:st
+             {
+                return {
+                   type: 'IFELSE',
+                   c: e,
+                   st: st,
+                   sf: sf,
+                };
+             }
+   / IF e:cond THEN st:st
+             {
+                return {
+                   type: 'IF',
+                   c: e,
+                   st: st
+                };
+             }
+   / BEGIN stt:st ar:(PTO_COMA st)* END
+             {
+                var result = [stt];
+                for ( var k = 0; k < ar.length; k++)
+                   result.push(ar[k][1]);
+                return result;
+             }
+   / WHILE c:cond DO s:st
+             {
+                return {
+                   type: 'WHILE',
+                   condicion: c,
+                   stat: s
+                };
+             }
+
+cond = ODD e:exp
+             {
+                return {
+                   type: 'ODD',
+                   cond: e
+                }
+             }
+     / e:exp t:COMPARISON ee:exp
+             {
+                return {
+                   type: t,
+                   left: e,
+                   right: ee
+                };
+             }
+             
 exp = t:term r:(ADD term)* { return tree(t,r); }
+
 term = f:factor r:(MUL factor)* { return tree(f,r); }
 
 factor = NUMBER
@@ -154,24 +139,24 @@ factor = NUMBER
 
 _ = $[ \t\n\r]*
 
+COMPARISON = _ op:('==' / [#|<|<=|>|>=]) _ { return op; }
 ASSIGN = _ op:'=' _ { return op; }
 ADD = _ op:[+-] _ { return op; }
 MUL = _ op:[*/] _ { return op; }
-COND = _ op:$([<>=!][=]/[<>]) _ { return op; }
+PTO = _"."_
+PTO_COMA = _";"_
+COMA = _","_
 LEFTPAR = _"("_
 RIGHTPAR = _")"_
-PTOCOMA = _";"_
-COMA = _","_
-PTO = _"."_
-CALL = _ "call" _
-BEGIN = _ "begin" _
-END = _ "end" _
-PROCEDURE = _ "procedure" _
-CONST = _ "const" _
-VAR = _ "var" _
+VAR = _"var"_
+CONST = _"const"_
+PROCEDURE= _"procedure"_
 IF = _ "if" _
 THEN = _ "then" _
 ELSE = _ "else" _
+CALL = _ "call" _
+BEGIN = _ "begin" _
+END = _ "end" _
 WHILE = _ "while" _
 DO = _ "do" _
 ODD = _ "odd" _
