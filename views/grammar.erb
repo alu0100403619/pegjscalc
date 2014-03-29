@@ -22,11 +22,12 @@ Recuerde que un PEG $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
 <ol>
   <li> $\Sigma = \{ if, then, else, =, +, -, *, /, (, ), 0 \ldots 9 \}$, 
   <li> $V = \{ st, exp, term, factor \} \cup$ <br />
-  $\{ADD, MUL, COND, LEFTPAR, RIGHTPAR, PTO_COMA, COMA, PTO, CALL, BEGIN\} \cup$ <br />
-  $\{END, PROCEDURE, CONST, VAR, IF, THEN, ELSE, WHILE, DO, ODD, ID\}$
+  $\{COMPARISON, ASSIGN, ADD, MUL, PTO, PTO_COMA, COMA, LEFTPAR, RIGHTPAR, VAR\} \cup$ <br />
+  $\{CONST, PROCEDURE, IF, THEN, ELSE, CALL, BEGIN, END, WHILE, DO, ODD, ID, NUMBER\}$
   <li> Reglas de Análisis:
   <ol>
 <pre>
+
 program = (block) + PTO 
 
 block = CONST (cons) + PTO_COMA
