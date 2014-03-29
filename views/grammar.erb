@@ -20,9 +20,9 @@ Recuerde que un PEG $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
   $V$ que se denomina <i>expresión de arranque</i>.
 </ol>
 <ol>
-  <li> $\Sigma = \{ if, then, else, =, +, -, *, /, (, ), 0 \ldots 9 \}$, 
-  <li> $V = \{ st, exp, term, factor \} \cup$ <br />
-  $\{COMPARISON, ASSIGN, ADD, MUL, PTO, PTO_COMA, COMA, LEFTPAR, RIGHTPAR, VAR\} \cup$ <br />
+  <li> $\Sigma = \{ ID, NUM, CONST, VAR, PROCEDURE, CALL, BEGIN, END, IF, THEN, ELSE, WHILE, DO, ODD, ".", ",", =, ;,  =, ==, !=, <, >, +, -, *, /, (, ) \}$,
+  <li> $V = \{ program, block, cons, var, proc, assin, arg, st, cond, exp, term, factor\} \cup$ <br />
+  $\{COMPARISON, ASSIGN, ADD, MUL, PTO, PTO \_ COMA, COMA, LEFTPAR, RIGHTPAR, VAR\} \cup$ <br />
   $\{CONST, PROCEDURE, IF, THEN, ELSE, CALL, BEGIN, END, WHILE, DO, ODD, ID, NUMBER\}$
   <li> Reglas de Análisis:
   <ol>
