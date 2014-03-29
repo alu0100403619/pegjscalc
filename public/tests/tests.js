@@ -3,7 +3,7 @@ var assert = chai.assert;
 suite('Detección correcta de códigos simples', function(){
   test('Comprobación de asignación', function(){
     var aux = pl0.parse("variable = 150 .");
-    assert.equal(aux, "ASSIGN")
+    assert.match(output.innerHTML, "ASSIGN")
   });
 
 //   test('Comprobación de suma', function(){
