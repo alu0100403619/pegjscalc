@@ -51,7 +51,7 @@ cons = CONST u:assin c:(COMA (assin))* PTO_COMA
 var = VAR id:ID i:(COMA ID)* PTO_COMA
              {
                 var result = new Array();
-                r.push(id);
+                result.push(id);
                 for ( var k = 0; k < i.length; k++)
                    result.push(i[k][1]);
                 return result;
