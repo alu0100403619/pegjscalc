@@ -1,90 +1,50 @@
-var assert = chai.assert;
+var assert = chai.assert; //la variable assert contiene los asertos que se pueden realizar
 
-suite('Detección correcta de códigos simples', function(){
-  test('Comprobación de asignación', function(){
-    var aux = pl0.parse("variable = 150 .");
-    $('#output').html(JSON.stringify(aux,undefined,2));
-    assert.match(output.innerHTML, "ASSIGN")
+suite( 'Analizador sintáctico con PEGJS', function(){ //Suite equivale al describle en RAKE
+  
+  test('Resta asociativa a la izquierda', function(){
+    var result = pl0.parse("A = 3 - 4 - 1.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [],\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "A"\n },\n "right": {\n "type": "-",\n "left": {\n "type": "-",\n "left": {\n "type": "NUM",\n "value": 3\n },\n "right": {\n "type": "NUM",\n "value": 4\n }\n },\n "right": {\n "type": "NUM",\n "value": 1\n }\n }\n }\n ]\n}');
   });
-
-//   test('Comprobación de suma', function(){
-//     var aux = pl0.parse("variable = 100 + 50 .")
-//     assert.equal(aux.program[0].sentence.right.type, "+")
-//   });
-// 
-//   test('Comprobación de multiplicación', function(){
-//     var aux = pl0.parse("variable = 5 * 10 .")
-//     assert.equal(aux.program[0].sentence.right.type, "*")
-//   });
-// 
-//   test('Comprobación de división', function(){
-//     var aux = pl0.parse("variable = 100 / 2 .")
-//     assert.equal(aux.program[0].sentence.right.type, "/")
-//   });
-// 
-//   test('Comprobación de precedencia de operadores', function(){
-//     var aux = pl0.parse("variable = 10 + 20 * 2 .")
-//     assert.equal(aux.program[0].sentence.right.type, "+")
-//     assert.equal(aux.program[0].sentence.right.right.type, "*")
-//   });
-// 
-//   test('Comprobación de comparación', function(){
-//     var aux = pl0.parse("if variable1 == 100 then variable2 = 200.")
-//     assert.equal(aux.program[0].sentence.condition.type, "==")
-//   });
-// 
-//   test('Comprobación de recursividad a izquierdas', function(){
-//     var aux = pl0.parse("variable = 10 - 5 - 1 .");
-//     assert.equal(aux.program[0].sentence.type, "ASSIGN")
-//     assert.equal(aux.program[0].sentence.right.type, "-")
-//     assert.equal(aux.program[0].sentence.right.left.type, "-")
-//   });
-// 
-//   test('Comprobación de detección de errores', function(){
-//     assert.throws(function() { pl0.parse("var1 = 500"); }, /Expected "."/);
-//   });
-// 
-// });
-// 
-// suite('Detección correcta de códigos complejos', function(){
-//   test('Comprobación de IF', function(){
-//     var aux = pl0.parse("if variable1 == 100 then variable2 = 200.")
-//     assert.equal(aux.program[0].sentence.type, "IF")
-//   });
-//   
-//    test('Comprobación de IF-ELSE', function(){
-//     var aux = pl0.parse("if variable1 == 100 then variable2 = 200 else variable3 = 300.")
-//     assert.equal(aux.program[0].sentence.type, "IFELSE")
-//   });
-// 
-//   test('Comprobación de BEGIN-END', function(){
-//     var aux = pl0.parse("begin variable1 = 150; variable2 = 200; end; .")
-//     assert.equal(aux.program[0].sentence.type, "BEGIN")
-//   });
-// 
-//   test('Comprobación de WHILE-DO', function(){
-//     var aux = pl0.parse("while variable == 250 do variable2 = variable3 - 1.")
-//     assert.equal(aux.program[0].sentence.type, "WHILE")
-//   });
-// 
-//   test('Comprobación de CALL', function(){
-//     var aux = pl0.parse("call miFuncion; .")
-//     assert.equal(aux.program[0].sentence.type, "CALL")
-//   });
-// 
-//   test('Comprobación de paso de argumentos en CALL', function(){
-//     var aux = pl0.parse("call miFuncion(a, b, c); .")
-//     assert.equal(aux.program[0].sentence.type, "CALL")
-//     assert.equal(aux.program[0].sentence.arguments[0].ident.value, "a")
-//     assert.equal(aux.program[0].sentence.arguments[1].ident.value, "b")
-//     assert.equal(aux.program[0].sentence.arguments[2].ident.value, "c")
-//   });
-//   
-//   test('Comprobación de paso de argumentos en PROCEDURE', function(){
-//     var aux = pl0.parse("procedure miFuncion(var a, var b): begin a = 1; b = 2; end;end; x = 7 - 1; .")
-//     $('#output').html(JSON.stringify(aux,undefined,2));
-//     assert.match(output.innerHTML, /PROCEDURE/)
-//     assert.equal(aux.program[0].procedure[0].arguments[0].ident.value, "a")
-//     assert.equal(aux.program[0].procedure[0].arguments[1].ident.value, "b")
-//   });
+  
+  test('Division asociativa a la izquierda', function(){
+    var result = pl0.parse("A = 3 / 4 / 2.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [],\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "A"\n },\n "right": {\n "type": "/",\n "left": {\n "type": "/",\n "left": {\n "type": "NUM",\n "value": 3\n },\n "right": {\n "type": "NUM",\n "value": 4\n }\n },\n "right": {\n "type": "NUM",\n "value": 2\n }\n }\n }\n ]\n}');
+  });
+  
+  test('Constructor program', function(){
+    var result = pl0.parse("const A = 5; var A, b; t = 3.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n {\n "type": "CONST",\n "lista": [\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "A"\n },\n "right": {\n "type": "NUM",\n "value": 5\n }\n }\n ]\n },\n {\n "type": "VAR",\n "lista": [\n {\n "type": "ID",\n "value": "A"\n },\n {\n "type": "ID",\n "value": "b"\n }\n ]\n },\n [],\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "t"\n },\n "right": {\n "type": "NUM",\n "value": 3\n }\n }\n ]\n}');
+  });
+  
+  test('Constructor de bloque', function(){
+    var result = pl0.parse("procedure sum ( u ); j = u + 8; call sum (u).");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [\n {\n "type": "PROCEDURE",\n "name": {\n "type": "ID",\n "value": "sum"\n },\n "argumentos": {\n "lista": [\n {\n "type": "ID",\n "value": "u"\n }\n ]\n },\n "subrutina": {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "j"\n },\n "right": {\n "type": "+",\n "left": {\n "type": "ID",\n "value": "u"\n },\n "right": {\n "type": "NUM",\n "value": 8\n }\n }\n }\n }\n ],\n {\n "type": "CALL",\n "argumentos": {\n "lista": [\n {\n "type": "ID",\n "value": "u"\n }\n ]\n },\n "right": {\n "type": "ID",\n "value": "sum"\n }\n }\n ]\n}');
+  });
+  
+  test('Constructor de statement', function(){
+    var result = pl0.parse("B = 6 / i.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [],\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "B"\n },\n "right": {\n "type": "/",\n "left": {\n "type": "NUM",\n "value": 6\n },\n "right": {\n "type": "ID",\n "value": "i"\n }\n }\n }\n ]\n}');
+  });
+  
+  test('Constructor de condicion', function(){
+    var result = pl0.parse("if a == b then j = a else j = b.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [],\n {\n "type": "IFELSE",\n "c": {\n "type": "==",\n "left": {\n "type": "ID",\n "value": "a"\n },\n "right": {\n "type": "ID",\n "value": "b"\n }\n },\n "st": {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "j"\n },\n "right": {\n "type": "ID",\n "value": "a"\n }\n },\n "sf": {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "j"\n },\n "right": {\n "type": "ID",\n "value": "b"\n }\n }\n }\n ]\n}');
+  });
+  
+  test('Constructores de termino y factor', function(){
+    var result = pl0.parse("A = 3 * 4 + 2.");
+    assert.deepEqual(JSON.stringify(result,undefined,2), '{\n "type": "PROGRAM",\n "bloque": [\n [],\n {\n "type": "=",\n "left": {\n "type": "ID",\n "value": "A"\n },\n "right": {\n "type": "+",\n "left": {\n "type": "*",\n "left": {\n "type": "NUM",\n "value": 3\n },\n "right": {\n "type": "NUM",\n "value": 4\n }\n },\n "right": {\n "type": "NUM",\n "value": 2\n }\n }\n }\n ]\n}');
+  });
+  
+  test('Error gramatico', function(){
+    try {
+      var result = pl0.parse("var i = 0, u = 9.");
+      result = (JSON.stringify(result,undefined,2));
+    } catch (e) {
+      result = (String(e));
+    }
+    assert.deepEqual(result, 'SyntaxError: Expected ",", ";" or [ \\t\\n\\r] but "=" found.');
+  });
+  
 });
