@@ -64,7 +64,7 @@ pl0 = (function() {
                      },
         peg$c6 = function(id, i) {
                         var result = new Array();
-                        r.push(id);
+                        result.push(id);
                         for ( var k = 0; k < i.length; k++)
                            result.push(i[k][1]);
                         return result;
